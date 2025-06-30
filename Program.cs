@@ -10,19 +10,15 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Add DbContext for EF Core
-//builder.Services.AddDbContext<AppDbContext>(options =>
-//    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
+// Use SQLite for Render compatibility
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-
-// Register your custom services and repositories
+// Register services and repositories
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 
-// ✅ Add CORS policy
+// CORS policy
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -35,24 +31,28 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// ✅ Enable middleware
+// Middleware setup
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// ✅ Serve index.html and static files from wwwroot
-app.UseDefaultFiles(); // Automatically serves wwwroot/index.html if browser requests base URL
-app.UseStaticFiles();  // Serves static content (HTML, CSS, JS)
+// Serve static files (HTML, CSS, JS from wwwroot)
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
 app.UseHttpsRedirection();
-
-// ✅ Enable CORS (before routing)
 app.UseCors("AllowAll");
-
 app.UseAuthorization();
 
 app.MapControllers();
+
+// ✅ Apply EF Core migrations at app startup
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate(); // Runs pending migrations
+}
 
 app.Run();
