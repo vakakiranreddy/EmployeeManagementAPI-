@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Employee Manager</title>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <style>
         :root {
             --primary: #007BFF;
             --danger: #dc3545;
-            --success: #28a745;
             --bg: #f9f9f9;
             --text: #333;
         }
@@ -17,44 +16,45 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 0;
             background-color: var(--bg);
             color: var(--text);
         }
 
         h1 {
             text-align: center;
-            margin-bottom: 40px;
-            color: var(--primary);
+            padding: 20px;
+            background-color: var(--primary);
+            color: white;
+            margin: 0;
         }
 
-        .container {
-            display: flex;
-            flex-wrap: wrap;
+        main {
+            padding: 20px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 20px;
-            justify-content: center;
         }
 
         .section {
             background: white;
             border-radius: 10px;
             padding: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 420px;
-            flex: 1;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
             .section h2 {
                 margin-top: 0;
-                font-size: 20px;
+                font-size: 18px;
                 color: var(--primary);
                 border-bottom: 1px solid #ddd;
                 padding-bottom: 5px;
             }
 
         input, button {
-            display: block;
             width: 100%;
             margin: 8px 0;
             padding: 10px;
@@ -67,11 +67,20 @@
             background-color: var(--primary);
             color: white;
             border: none;
-            transition: 0.3s ease;
+            cursor: pointer;
+            transition: background 0.3s ease;
         }
 
             button:hover {
                 background-color: #0056b3;
+            }
+
+        .danger {
+            background-color: var(--danger);
+        }
+
+            .danger:hover {
+                background-color: #b02a37;
             }
 
         pre {
@@ -84,8 +93,8 @@
         }
 
         @media (max-width: 600px) {
-            .section {
-                width: 100%;
+            body {
+                padding: 0 10px;
             }
         }
     </style>
@@ -93,114 +102,115 @@
 <body>
 
     <h1>Employee Management</h1>
+    <main>
+        <div class="grid-container">
+            <div class="section">
+                <h2>Get All Employees</h2>
+                <button onclick="getAll()">Fetch All</button>
+                <pre id="allEmployees"></pre>
+            </div>
 
-    <div class="container">
+            <div class="section">
+                <h2>Get Employee by ID</h2>
+                <input type="number" id="getId" placeholder="Enter Employee ID">
+                <button onclick="getById()">Fetch</button>
+                <pre id="oneEmployee"></pre>
+            </div>
 
-        <div class="section">
-            <h2>Get All Employees</h2>
-            <button onclick="getAll()">Fetch All</button>
-            <pre id="allEmployees"></pre>
+            <div class="section">
+                <h2>Create New Employee</h2>
+                <input type="text" id="newName" placeholder="Name">
+                <input type="email" id="newEmail" placeholder="Email">
+                <input type="text" id="newDepartment" placeholder="Department">
+                <input type="number" id="newSalary" placeholder="Salary">
+                <button onclick="createEmployee()">Create</button>
+                <pre id="createResult"></pre>
+            </div>
+
+            <div class="section">
+                <h2>Update Employee</h2>
+                <input type="number" id="updateId" placeholder="ID to Update">
+                <input type="text" id="updateName" placeholder="New Name">
+                <input type="email" id="updateEmail" placeholder="New Email">
+                <input type="text" id="updateDepartment" placeholder="New Department">
+                <input type="number" id="updateSalary" placeholder="New Salary">
+                <button onclick="updateEmployee()">Update</button>
+                <pre id="updateResult"></pre>
+            </div>
+
+            <div class="section">
+                <h2>Delete Employee</h2>
+                <input type="number" id="deleteId" placeholder="ID to Delete">
+                <button onclick="deleteEmployee()" class="danger">Delete</button>
+                <pre id="deleteResult"></pre>
+            </div>
         </div>
-
-        <div class="section">
-            <h2>Get Employee by ID</h2>
-            <input type="number" id="getId" placeholder="Enter Employee ID">
-            <button onclick="getById()">Fetch</button>
-            <pre id="oneEmployee"></pre>
-        </div>
-
-        <div class="section">
-            <h2>Create New Employee</h2>
-            <input type="text" id="newName" placeholder="Name">
-            <input type="email" id="newEmail" placeholder="Email">
-            <input type="text" id="newDepartment" placeholder="Department">
-            <input type="number" id="newSalary" placeholder="Salary">
-            <button onclick="createEmployee()">Create</button>
-            <pre id="createResult"></pre>
-        </div>
-
-        <div class="section">
-            <h2>Update Employee</h2>
-            <input type="number" id="updateId" placeholder="ID to Update">
-            <input type="text" id="updateName" placeholder="New Name">
-            <input type="email" id="updateEmail" placeholder="New Email">
-            <input type="text" id="updateDepartment" placeholder="New Department">
-            <input type="number" id="updateSalary" placeholder="New Salary">
-            <button onclick="updateEmployee()">Update</button>
-            <pre id="updateResult"></pre>
-        </div>
-
-        <div class="section">
-            <h2>Delete Employee</h2>
-            <input type="number" id="deleteId" placeholder="ID to Delete">
-            <button onclick="deleteEmployee()" style="background-color: var(--danger);">Delete</button>
-            <pre id="deleteResult"></pre>
-        </div>
-
-    </div>
+    </main>
 
     <script>
-  const baseUrl = "https://localhost:7095/api/employees";
+        const baseUrl = "https://employeemanagementapi-kiran.onrender.com/api/employees";
 
-  function getAll() {
-    axios.get(baseUrl)
-      .then(res => {
-        document.getElementById("allEmployees").textContent =
-          JSON.stringify(res.data, null, 2);
-      })
-      .catch(err => alert("Error: " + err));
-  }
+        function getAll() {
+            axios.get(baseUrl)
+                .then(res => {
+                    document.getElementById("allEmployees").textContent = JSON.stringify(res.data, null, 2);
+                })
+                .catch(err => alert("Error: " + err));
+        }
 
-  function getById() {
-    const id = document.getElementById("getId").value;
-    axios.get(`${baseUrl}/${id}`)
-      .then(res => {
-        document.getElementById("oneEmployee").textContent =
-          JSON.stringify(res.data, null, 2);
-      })
-      .catch(() => document.getElementById("oneEmployee").textContent = "Not Found");
-  }
+        function getById() {
+            const id = document.getElementById("getId").value;
+            axios.get(`${baseUrl}/${id}`)
+                .then(res => {
+                    document.getElementById("oneEmployee").textContent = JSON.stringify(res.data, null, 2);
+                })
+                .catch(() => {
+                    document.getElementById("oneEmployee").textContent = "Not Found";
+                });
+        }
 
-  function createEmployee() {
-    const employee = {
-      name: document.getElementById("newName").value,
-      email: document.getElementById("newEmail").value,
-      department: document.getElementById("newDepartment").value,
-      salary: parseFloat(document.getElementById("newSalary").value)
-    };
-    axios.post(baseUrl, employee)
-      .then(res => {
-        document.getElementById("createResult").textContent =
-          JSON.stringify(res.data, null, 2);
-      })
-      .catch(err => alert("Error: " + err));
-  }
+        function createEmployee() {
+            const employee = {
+                name: document.getElementById("newName").value,
+                email: document.getElementById("newEmail").value,
+                department: document.getElementById("newDepartment").value,
+                salary: parseFloat(document.getElementById("newSalary").value)
+            };
+            axios.post(baseUrl, employee)
+                .then(res => {
+                    document.getElementById("createResult").textContent = JSON.stringify(res.data, null, 2);
+                })
+                .catch(err => alert("Error: " + err));
+        }
 
-  function updateEmployee() {
-    const id = parseInt(document.getElementById("updateId").value);
-    const employee = {
-      id: id,
-      name: document.getElementById("updateName").value,
-      email: document.getElementById("updateEmail").value,
-      department: document.getElementById("updateDepartment").value,
-      salary: parseFloat(document.getElementById("updateSalary").value)
-    };
-    axios.put(`${baseUrl}/${id}`, employee)
-      .then(res => {
-        document.getElementById("updateResult").textContent =
-          JSON.stringify(res.data, null, 2);
-      })
-      .catch(() => document.getElementById("updateResult").textContent = "Not Found or Error");
-  }
+        function updateEmployee() {
+            const id = parseInt(document.getElementById("updateId").value);
+            const employee = {
+                id: id,
+                name: document.getElementById("updateName").value,
+                email: document.getElementById("updateEmail").value,
+                department: document.getElementById("updateDepartment").value,
+                salary: parseFloat(document.getElementById("updateSalary").value)
+            };
+            axios.put(`${baseUrl}/${id}`, employee)
+                .then(res => {
+                    document.getElementById("updateResult").textContent = JSON.stringify(res.data, null, 2);
+                })
+                .catch(() => {
+                    document.getElementById("updateResult").textContent = "Not Found or Error";
+                });
+        }
 
-  function deleteEmployee() {
-    const id = document.getElementById("deleteId").value;
-    axios.delete(`${baseUrl}/${id}`)
-      .then(() => {
-        document.getElementById("deleteResult").textContent = "Deleted Successfully";
-      })
-      .catch(() => document.getElementById("deleteResult").textContent = "Not Found");
-  }
+        function deleteEmployee() {
+            const id = document.getElementById("deleteId").value;
+            axios.delete(`${baseUrl}/${id}`)
+                .then(() => {
+                    document.getElementById("deleteResult").textContent = "Deleted Successfully";
+                })
+                .catch(() => {
+                    document.getElementById("deleteResult").textContent = "Not Found";
+                });
+        }
     </script>
 
 </body>
